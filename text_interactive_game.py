@@ -2,6 +2,7 @@
 _author_ = 'maryan_partyka'
 
 class TextInteractiveGame:
+    
     states_list = ['alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado', 'connecticut',
               'delaware', 'florida', 'georgia', 'hawaii', 'idaho', 'illinois', 'indiana', 'iowa', 'kansas',
               'kentucky', 'louisiana', 'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota', 'mississippi',
@@ -9,6 +10,7 @@ class TextInteractiveGame:
               'new york', 'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon', 'pennsylvania',
               'rhode island', 'south carolina', 'south dakota', 'tennessee', 'texas', 'utah', 'vermont',
               'virginia', 'washington', 'west virginia', 'wisconsin', 'wyoming']
+    
     first_letter_list = ['a', 'c', 'd', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w']
     correct_state = True
     entered_states_list = []
@@ -20,7 +22,7 @@ class TextInteractiveGame:
           "1. The goal of the game is checking your knowledge of US state names.\n" \
           "2. Fisrt of all, you enter name of US state. \n" \
           "Then enter name of US state where first letter is the last letter of previous successfully entered name of US state.\n" \
-          "3. You have only one possibility to make mistake on the start of the game.\n" \
+          "3. You have only one possibility to make mistake.\n" \
           "4. You can\'t repeat name of US states.\n" \
           "5. Each successfully entered name of US state is 10 points to your score.\n" \
           "6. If you enter wrong name of US state your game is over.\n" \
