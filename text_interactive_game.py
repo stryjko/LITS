@@ -1,20 +1,24 @@
 
 _author_ = 'maryan_partyka'
 
+
 class TextInteractiveGame:
-    
+
     states_list = ['alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado', 'connecticut',
-              'delaware', 'florida', 'georgia', 'hawaii', 'idaho', 'illinois', 'indiana', 'iowa', 'kansas',
-              'kentucky', 'louisiana', 'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota', 'mississippi',
-              'missouri', 'montana', 'nebraska', 'nevada', 'new hampshire', 'new jersey', 'new mexico',
-              'new york', 'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon', 'pennsylvania',
-              'rhode island', 'south carolina', 'south dakota', 'tennessee', 'texas', 'utah', 'vermont',
-              'virginia', 'washington', 'west virginia', 'wisconsin', 'wyoming']
-    
+                  'delaware', 'florida', 'georgia', 'hawaii', 'idaho', 'illinois', 'indiana', 'iowa', 'kansas',
+                  'kentucky', 'louisiana', 'maine', 'maryland', 'massachusetts', 'michigan', 'minnesota', 'mississippi',
+                  'missouri', 'montana', 'nebraska', 'nevada', 'new hampshire', 'new jersey', 'new mexico',
+                  'new york', 'north carolina', 'north dakota', 'ohio', 'oklahoma', 'oregon', 'pennsylvania',
+                  'rhode island', 'south carolina', 'south dakota', 'tennessee', 'texas', 'utah', 'vermont',
+                  'virginia', 'washington', 'west virginia', 'wisconsin', 'wyoming']
+
     first_letter_list = ['a', 'c', 'd', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w']
-    correct_state = True
+
     entered_states_list = []
     second_entr_start_lst = []
+    wrong_states_lst = []
+    correct_state = True
+    letter_flag = True
     win = 0
 
     print 'Interactive game - "US States"'
@@ -25,60 +29,86 @@ class TextInteractiveGame:
           "3. You have only one possibility to make mistake.\n" \
           "4. You can\'t repeat name of US states.\n" \
           "5. Each successfully entered name of US state is 10 points to your score.\n" \
-          "6. If you enter wrong name of US state your game is over.\n" \
-          "7. If your first letter of US state name does not meet the last letter of the previous name of US state your game is over."
-
+          "6. Every 50 points brings you double points to your score.\n" \
+          "7. If you enter wrong name of US state your game is over.\n" \
+          "8. If your first letter of US state name does not meet the last letter of the previous name of US state your game is over.\n" \
+          "9. You win in case when you guess all US state."
 
     def check_state(self, new_state, last_symbol_prev_us_state):
         if new_state in self.second_entr_start_lst:
-            print 'You have already chosen this state twice. \n Game Over! \n Your score is - %r' % self.win
-            self.correct_state = False
-        elif new_state in self.entered_states_list:
-            print'You have already chosen this state.' 
-            self.second_entr_start_lst.append(new_state)
-            new_state = raw_input(
-                "Please enter correct state which is start with letter \'%s\'. It\'s your last chance - " % last_symbol_prev_us_state).lower()
-            if new_state[0].lower() != last_symbol_prev_us_state:
-                print 'You had to enter enter name of US state which is start with letter \'%s\'' % last_symbol_prev_us_state 
-                print 'You have broken rules of the game. \n Game Over! \n Your score is - %r' % self.win
-                self.correct_state = False
-            elif new_state in self.states_list and new_state not in self.entered_states_list:
-                self.win += 10
-                self.entered_states_list.append(new_state)
-                print 'Great! It\'s correct name of US states. \n Your score is - %r' % self.win
-                self.correct_state = True
-            elif new_state in self.entered_states_list:
-                print 'You have already chosen this state. \n Game Over! \n Your score is - %r' % self.win
+            # check if we have another name of state with the same first letter
+            check = self.check_states_with_letter(last_symbol_prev_us_state)
+            if check:
+                print 'You have already chosen this state twice. \n Game Over! \n Your score is - %r' % self.win
                 self.correct_state = False
             else:
-                print 'No way! It\'s incorrect name of US states. \n Game Over! \n Your score is - %r' % self.win
-                self.correct_state = False
-        elif last_symbol_prev_us_state:
-            if new_state[0].lower() != last_symbol_prev_us_state:
-                print 'You should enter name of US state which is start with letter \'%s\'' % last_symbol_prev_us_state 
+                print 'You already entered all US states which start with letter - \'%s\'' % last_symbol_prev_us_state
+                if self.check_full_success() is True:
+                    print 'Congratulations! You Win!.\n Your score is - %r' % self.win
+                    self.correct_state = False
+                new_state = raw_input(
+                    "Please enter correct state which is not entered yet. - ").lower()
+                if new_state in self.states_list and new_state not in self.entered_states_list:
+                    self.check_state(new_state, None)
+                elif new_state in self.states_list:
+                    self.check_state(new_state, new_state[0])
+                else:
+                    print 'Wrong state. \n Game Over! \n Your score is - %r' % self.win
+                    self.correct_state = False
+
+        elif new_state in self.entered_states_list:
+            print'You have already chosen this state.'
+            self.second_entr_start_lst.append(new_state)
+            check = self.check_states_with_letter(last_symbol_prev_us_state)
+            if check:
                 new_state = raw_input(
                     "Please enter correct state which is start with letter \'%s\'. It\'s your last chance - " % last_symbol_prev_us_state).lower()
-                if new_state[0].lower() != last_symbol_prev_us_state:
-                    print 'You had to enter enter name of US state which is start with letter \'%s\'' % last_symbol_prev_us_state 
-                    print 'You have broken rules of the game. \n Game Over! \n Your score is - %r' % self.win
+                self.check_state(new_state, last_symbol_prev_us_state)
+            else:
+                print 'You already entered all US states which start with letter - \'%s\'' % last_symbol_prev_us_state
+                if self.check_full_success() is True:
+                    print 'Congratulations! You Win!.\n Your score is - %r' % self.win
                     self.correct_state = False
-                elif new_state in self.states_list and new_state not in self.entered_states_list:
-                    self.win += 10
-                    self.entered_states_list.append(new_state)
-                    print 'Great! It\'s correct name of US states. \n Your score is - %r' % self.win
-                    self.correct_state = True
-                elif new_state in self.entered_states_list:
-                    print 'You have already chosen this state. \n Game Over! \n Your score is - %r' % self.win
-                    self.correct_state = False
+                new_state = raw_input(
+                    "Please enter correct state which is not entered yet. - ").lower()
+                if new_state in self.states_list and new_state not in self.entered_states_list:
+                    self.check_state(new_state, None)
+                elif new_state in self.states_list:
+                    self.check_state(new_state, new_state[0])
                 else:
+                    print 'Wrong state. \n Game Over! \n Your score is - %r' % self.win
+                    self.correct_state = False
+
+        elif last_symbol_prev_us_state:
+            print new_state
+            if new_state[0].lower() != last_symbol_prev_us_state:
+                if new_state not in self.states_list:
                     print 'No way! It\'s incorrect name of US states. \n Game Over! \n Your score is - %r' % self.win
                     self.correct_state = False
+                elif not self.letter_flag:
+                    print 'You should to enter US state which is start with letter \'%s\'. ' \
+                          '\n Game Over! \n Your score is - %r' % (last_symbol_prev_us_state, self.win)
+                    self.correct_state = False
+                else:
+                    print 'You should enter name of US state which is start with letter \'%s\'' % last_symbol_prev_us_state
+                    self.wrong_states_lst.append(new_state)
+                    new_state = raw_input(
+                        "Please enter correct state which is start with letter \'%s\'. It\'s your last chance - " % last_symbol_prev_us_state).lower()
+                    self.letter_flag = False
+                    self.check_state(new_state, last_symbol_prev_us_state)
 
             elif new_state in self.states_list and new_state not in self.entered_states_list:
                 self.win += 10
                 self.entered_states_list.append(new_state)
                 print 'Great! It\'s correct name of US states. \n Your score is - %r' % self.win
+                if self.win % 50 == 0:
+                    self.win = self.win * 2
+                    print 'Now Your score is doubling - %r' % self.win
                 self.correct_state = True
+                if self.check_full_success() is True:
+                    print 'Congratulations! You Win!.\n Your score is - %r' % self.win
+                    self.correct_state = False
+
             else:
                 print 'No way! It\'s incorrect name of US states. \n Game Over! \n Your score is - %r' % self.win
                 self.correct_state = False
@@ -87,7 +117,14 @@ class TextInteractiveGame:
             self.win += 10
             self.entered_states_list.append(new_state)
             print 'Great! It\'s correct name of US states. \n Your score is - %r' % self.win
+            if self.win % 50 == 0:
+                self.win = self.win * 2
+                print 'Now Your score is doubling - %r' % self.win
             self.correct_state = True
+            if self.check_full_success() is True:
+                print 'Congratulations! You Win!.\n Your score is - %r' % self.win
+                self.correct_state = False
+
         else:
             print 'No way! It\'s incorrect name of US states'
             new_state = raw_input(
@@ -96,13 +133,20 @@ class TextInteractiveGame:
                 self.win += 10
                 self.entered_states_list.append(new_state)
                 print 'Great! It\'s correct name of US states.\n Your score is - %r' % self.win
+                if self.win % 50 == 0:
+                    self.win = self.win * 2
+                    print 'Now Your score is doubling - %r' % self.win
                 self.correct_state = True
+                if self.check_full_success() is True:
+                    print 'Congratulations! You Win!.\n Your score is - %r' % self.win
+                    self.correct_state = False
+
             else:
                 print 'No way! It\'s incorrect name of US states. \n Game Over! \n Your score is - %r' % self.win
                 self.correct_state = False
         return new_state
 
-
+    # to find last correct letter in tne name of US states
     def find_last_symbol(self, new_state):
         letter = None
         all_letter = [ch for ch in new_state]
@@ -115,8 +159,29 @@ class TextInteractiveGame:
                 break
         return letter
 
+    # case when we doesn't have another name of state with the same first letter
+    def check_states_with_letter(self, last_symbol):
+        check = False
+        for state in self.states_list:
+            if state[0] != last_symbol:
+                continue
+            elif state not in self.entered_states_list:
+                check = True
+                break
+            else:
+                continue
+        return check
+
+    # check if you guess all US states
+    def check_full_success(self):
+        for state in self.states_list:
+            if state not in self.entered_states_list:
+                return False
+        return True
+
+    # start our interactive game
     def start_game(self):
-        
+
         # start game, type first US state name
         new_state = raw_input("\nPlease, enter some US state - ").lower()
 
