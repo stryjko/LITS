@@ -1,4 +1,3 @@
-
 _author_ = 'maryan_partyka'
 
 
@@ -19,6 +18,7 @@ class TextInteractiveGame:
     wrong_states_lst = []
     correct_state = True
     letter_flag = True
+    already_entered_flag = False
     win = 0
 
     print 'Interactive game - "US States"'
@@ -27,16 +27,16 @@ class TextInteractiveGame:
           "2. Fisrt of all, you enter name of US state. \n" \
           "Then enter name of US state where first letter is the last letter of previous successfully entered name of US state.\n" \
           "3. You have only one possibility to make mistake.\n" \
-          "4. You can\'t repeat name of US states.\n" \
+          "4. You can\'t repeat name of US states. One mistake allowed\n" \
           "5. Each successfully entered name of US state is 10 points to your score.\n" \
           "6. Every 50 points brings you double points to your score.\n" \
           "7. If you enter wrong name of US state your game is over.\n" \
-          "8. If your first letter of US state name does not meet the last letter of the previous name of US state your game is over.\n" \
+          "8. If your first letter of US state name does not meet the last letter of the previous name of US state your game is over. One mistake allowed\n" \
           "9. You win in case when you guess all US state."
 
     def check_state(self, new_state, last_symbol_prev_us_state):
         if new_state in self.second_entr_start_lst:
-            # check if we have another name of state with the same first letter
+            # when we already entered that state twice
             check = self.check_states_with_letter(last_symbol_prev_us_state)
             if check:
                 print 'You have already chosen this state twice. \n Game Over! \n Your score is - %r' % self.win
@@ -46,8 +46,14 @@ class TextInteractiveGame:
                 if self.check_full_success() is True:
                     print 'Congratulations! You Win!.\n Your score is - %r' % self.win
                     self.correct_state = False
+                if self.already_entered_flag:
+                    print 'You should entered correct state which is not entered yet ' \
+                          '\n Game Over! \n Your score is - %r' % self.win
+                    self.correct_state = False
                 new_state = raw_input(
                     "Please enter correct state which is not entered yet. - ").lower()
+                self.already_entered_flag = True
+                
                 if new_state in self.states_list and new_state not in self.entered_states_list:
                     self.check_state(new_state, None)
                 elif new_state in self.states_list:
@@ -57,6 +63,7 @@ class TextInteractiveGame:
                     self.correct_state = False
 
         elif new_state in self.entered_states_list:
+            # when we already entered that state
             print'You have already chosen this state.'
             self.second_entr_start_lst.append(new_state)
             check = self.check_states_with_letter(last_symbol_prev_us_state)
@@ -69,8 +76,13 @@ class TextInteractiveGame:
                 if self.check_full_success() is True:
                     print 'Congratulations! You Win!.\n Your score is - %r' % self.win
                     self.correct_state = False
+                if self.already_entered_flag:
+                    print 'You should entered correct state which is not entered yet ' \
+                          '\n Game Over! \n Your score is - %r' % self.win
+                    self.correct_state = False
                 new_state = raw_input(
                     "Please enter correct state which is not entered yet. - ").lower()
+                self.already_entered_flag = True
                 if new_state in self.states_list and new_state not in self.entered_states_list:
                     self.check_state(new_state, None)
                 elif new_state in self.states_list:
@@ -80,7 +92,7 @@ class TextInteractiveGame:
                     self.correct_state = False
 
         elif last_symbol_prev_us_state:
-            print new_state
+            # check last symbol of state name
             if new_state[0].lower() != last_symbol_prev_us_state:
                 if new_state not in self.states_list:
                     print 'No way! It\'s incorrect name of US states. \n Game Over! \n Your score is - %r' % self.win
@@ -102,7 +114,7 @@ class TextInteractiveGame:
                 self.entered_states_list.append(new_state)
                 print 'Great! It\'s correct name of US states. \n Your score is - %r' % self.win
                 if self.win % 50 == 0:
-                    self.win = self.win * 2
+                    self.win = self.win  + 50
                     print 'Now Your score is doubling - %r' % self.win
                 self.correct_state = True
                 if self.check_full_success() is True:
@@ -114,11 +126,12 @@ class TextInteractiveGame:
                 self.correct_state = False
 
         elif new_state in self.states_list and new_state not in self.entered_states_list:
+            # correct state, not entered yet
             self.win += 10
             self.entered_states_list.append(new_state)
             print 'Great! It\'s correct name of US states. \n Your score is - %r' % self.win
             if self.win % 50 == 0:
-                self.win = self.win * 2
+                self.win = self.win + 50
                 print 'Now Your score is doubling - %r' % self.win
             self.correct_state = True
             if self.check_full_success() is True:
@@ -126,6 +139,7 @@ class TextInteractiveGame:
                 self.correct_state = False
 
         else:
+            # inccorect state
             print 'No way! It\'s incorrect name of US states'
             new_state = raw_input(
                 "You have one more chance to enter correct name of US states. \nPlease, enter new correct US state - ").lower()
@@ -134,7 +148,7 @@ class TextInteractiveGame:
                 self.entered_states_list.append(new_state)
                 print 'Great! It\'s correct name of US states.\n Your score is - %r' % self.win
                 if self.win % 50 == 0:
-                    self.win = self.win * 2
+                    self.win = self.win + 50
                     print 'Now Your score is doubling - %r' % self.win
                 self.correct_state = True
                 if self.check_full_success() is True:
